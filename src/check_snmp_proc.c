@@ -16,6 +16,7 @@
 int warning = 1;
 int critical = 1;
 char exec_name[STRMAX];
+char exec_path[STRMAX];
 
 struct hrentry_t
 {
@@ -78,6 +79,15 @@ opt_proc(int argc, char* const* argv, int opt)
                             exit(STATUS_UNKNOWN);
                         }
                         break;
+                    case 'P':
+                        optind++;
+                        if (optind < argc) {
+                            snprintf(exec_path, STRMAX, "%s", argv[optind - 1]);
+                        } else {
+                            fprintf(stderr, "No value passed to -CP");
+                            exit(STATUS_UNKNOWN);
+                        }
+                        break;
                     default:
                         fprintf(stderr, "Unknown flag passed to -C: %c", optarg[-1]);
                         exit(STATUS_UNKNOWN);
@@ -118,6 +128,9 @@ filterentry(struct hrentry_t* hentry)
         status = 1;
     }
 
+    if ( strlen(exec_path) != 0 && strcmp(exec_path, hentry->hrswrpath) != 0 ) {
+        status = 1;
+    }
     return status;
 }
 
